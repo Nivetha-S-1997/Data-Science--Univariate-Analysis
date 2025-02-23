@@ -14,8 +14,8 @@ class Univariate():
 
     
     def descriptive(dataset,Quan):
-        Univariate=pd.DataFrame(index=["Mean","Median","Mode","Q1:25%","Q2:50%","Q3:75%","99%","Q4:100%","IQR","1.5IQR","LesserIQR","GreaterIQR","Min","Max",
-                                   "Skewness","Kurtosis"], columns=Quan)
+        Univariate=pd.DataFrame(index=["Mean","Median","Mode","Q1:25%","Q2:50%","Q3:75%","99%","Q4:100%","IQR","1.5IQR","LesserIQR","GreaterIQR",
+                                       "Min","Max","Skewness","Kurtosis","Variance","Std_Dev"], columns=Quan)
     
         for columnName in Quan:
             Univariate[columnName]["Mean"]=dataset[columnName].mean()
@@ -34,6 +34,8 @@ class Univariate():
             Univariate[columnName]["Max"]=dataset[columnName].max()
             Univariate[columnName]["Skewness"]=dataset[columnName].skew()
             Univariate[columnName]["Kurtosis"]=dataset[columnName].kurtosis()
+            Univariate[columnName]["Variance"]=dataset[columnName].var()
+            Univariate[columnName]["Std_Dev"]=dataset[columnName].std()
         return Univariate
 
     
@@ -45,3 +47,32 @@ class Univariate():
         FreqTable["Rel_freq"]=FreqTable["Frequency"]/103
         FreqTable["Cumsum"]=FreqTable["Rel_freq"].cumsum()
         return FreqTable
+        
+
+    def pdf(dataset,startrange,endrange):
+        sns.distplot(dataset,kde_kws={'color':'Green'},color='Blue')
+        pyplot.axvline(startrange,color='Red')
+        pyplot.axvline(endrange,color='Red')
+        
+        Mean=dataset.mean()
+        Std_dev=dataset.std()
+        print("Mean: ",Mean, "Standard deviation: ", Std_dev)
+        
+        dist=norm(Mean,Std_dev)
+        
+        values=[value for value in range(startrange,endrange)]
+        probability=[dist.pdf(value) for value in values]
+        prob_func=sum(probability)
+        print("The area between {} & {} is {}".format(startrange,endrange,prob_func))
+        return prob_func
+
+
+    def stdNB(dataset):
+        Mean=dataset.mean()
+        Std_dev=dataset.std()
+        print("Mean: ",Mean, "Standard Deviation: ",Std_dev)
+        
+        values=[i for i in dataset]
+        z_score=[((x-Mean)/Std_dev) for x in values]
+        sns.distplot(z_score,kde_kws={"color":"Red"})
+        #return z_score
